@@ -11,21 +11,13 @@ namespace ThreadDemo
     {
         static void Main(string[] args)
         {
-            // default thread
-            //Create threadstart delegate
-            var threadStart = new ThreadStart(WriteHello);
-            var thread = new Thread(threadStart);
-            thread.Start();
-
-            //Force main thread to wait for child thread
-            //thread.Join();
+            var threadRipper = new ThreadRipper();
+            //threadRipper.ThreadDefault();
+            //threadRipper.ThreadForceMainThread();
+            //threadRipper.ThreadPriorities();
+            threadRipper.ThreadBackGround();
 
             Console.WriteLine("End");
-         }
-
-        public static void WriteHello()
-        {
-            Console.WriteLine("Hello");
         }
     }
 }
