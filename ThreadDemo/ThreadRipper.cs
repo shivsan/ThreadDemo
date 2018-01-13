@@ -37,8 +37,36 @@ namespace ThreadDemo
         public void ThreadBackGround()
         {
             var thread = CreateDefaultThread();
-            //thread.IsBackground = true;
+            thread.IsBackground = true;
             thread.Start();
+        }
+
+        public void ThreadSharingAttribute()
+        {
+            try
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    var thread = new Thread(new ThreadStart(() => 
+                    {
+                        Console.WriteLine(ThreadSharer.Sharer++);
+                        var currentThread = Thread.CurrentThread;
+                        Console.WriteLine(currentThread.ManagedThreadId);
+                        Thread.Sleep(1000);
+                        currentThread.Abort();
+                    }));
+                    thread.Start();
+                    thread.Abort();
+                    thread.Join();
+                    //threadSharer.Shar++;
+                }
+            }
+            catch (ThreadAbortException ex)
+            {
+
+            }
+             
+            Console.WriteLine(ThreadSharer.Sharer);
         }
 
         #region private methods
@@ -67,11 +95,21 @@ namespace ThreadDemo
         private Thread CreatePriorityThread(ThreadPriority threadPriority)
         {
             var threadStart = new ParameterizedThreadStart(WritePriority);
-            var thread = new Thread(threadStart);
-            thread.Priority = threadPriority;
+            var thread = new Thread(threadStart)
+            {
+                Priority = threadPriority
+            };
             return thread;
         }
 
         #endregion
+    }
+
+    class ThreadSharer
+    {
+        [ThreadStatic]
+        private static int _sharer;
+
+        public static int Sharer { get => _sharer; set => _sharer = value; }
     }
 }

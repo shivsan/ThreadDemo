@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,7 +16,8 @@ namespace ThreadDemo
             //threadRipper.ThreadDefault();
             //threadRipper.ThreadForceMainThread();
             //threadRipper.ThreadPriorities();
-            threadRipper.ThreadBackGround();
+            //threadRipper.ThreadBackGround();
+            threadRipper.ThreadSharingAttribute();
 
             Console.WriteLine("End");
         }
