@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -17,9 +18,13 @@ namespace ThreadDemo
             //threadRipper.ThreadForceMainThread();
             //threadRipper.ThreadPriorities();
             //threadRipper.ThreadBackGround();
-            threadRipper.ThreadSharingAttribute();
+            //threadRipper.ThreadSharingAttribute();
+            var threadInitializer = new ThreadInitializer();
+            threadInitializer.MultiThread();
 
             Console.WriteLine("End");
+            var currentProcess = Process.GetCurrentProcess();
+            Console.WriteLine(currentProcess.Threads[1].Id);
         }
     }
 }

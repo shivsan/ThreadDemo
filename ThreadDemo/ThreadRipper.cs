@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using static System.Console;
 
 namespace ThreadDemo
 {
-    class ThreadRipper
+    internal class ThreadRipper
     {
         public void ThreadDefault()
         {            
@@ -45,42 +44,42 @@ namespace ThreadDemo
         {
             try
             {
-                for (int i = 0; i < 10; i++)
+                for (var i = 0; i < 10; i++)
                 {
-                    var thread = new Thread(new ThreadStart(() => 
+                    var thread = new Thread(() => 
                     {
-                        Console.WriteLine(ThreadSharer.Sharer++);
+                        WriteLine(ThreadSharer.Sharer++);
                         var currentThread = Thread.CurrentThread;
-                        Console.WriteLine(currentThread.ManagedThreadId);
+                        WriteLine(currentThread.ManagedThreadId);
                         Thread.Sleep(1000);
                         currentThread.Abort();
-                    }));
+                    });
                     thread.Start();
                     thread.Abort();
                     thread.Join();
                     //threadSharer.Shar++;
                 }
             }
-            catch (ThreadAbortException ex)
+            catch (ThreadAbortException)
             {
 
             }
-             
-            Console.WriteLine(ThreadSharer.Sharer);
+            
+            WriteLine(ThreadSharer.Sharer);
         }
 
         #region private methods
 
         private void WriteHello()
         {
-            Console.WriteLine("Hello");
+            WriteLine("Hello");
         }
 
-        private void WritePriority(object threadPriority)
+        private static void WritePriority(object threadPriority)
         {
-            foreach(var i in Enumerable.Range(0,10))
+            foreach(var _ in Enumerable.Range(0,10))
             {
-                Console.WriteLine("Prioritized: " + threadPriority.ToString());
+                WriteLine("Prioritized: " + threadPriority);
                 //Thread.Sleep(100);
             }
         }
@@ -92,7 +91,7 @@ namespace ThreadDemo
             return thread;
         }
 
-        private Thread CreatePriorityThread(ThreadPriority threadPriority)
+        private static Thread CreatePriorityThread(ThreadPriority threadPriority)
         {
             var threadStart = new ParameterizedThreadStart(WritePriority);
             var thread = new Thread(threadStart)
@@ -105,11 +104,37 @@ namespace ThreadDemo
         #endregion
     }
 
-    class ThreadSharer
+    internal class ThreadSharer
     {
         [ThreadStatic]
         private static int _sharer;
 
         public static int Sharer { get => _sharer; set => _sharer = value; }
+    }
+
+    internal class ThreadInitializer
+    {
+        private static ThreadLocal<int> _field = new ThreadLocal<int>(() => Thread.CurrentThread.ManagedThreadId);
+
+        public void MultiThread()
+        {
+            var waitThreads = new List<WaitHandle>();
+
+            for (var i = 0; i < 10; i++)
+            {
+                var handle = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+                var thread = new Thread(() =>
+                {
+                    Console.WriteLine("Thread id: " + _field.Value);
+                    handle.Set();
+                });
+
+                waitThreads.Add(handle);
+                thread.Start();
+            }
+
+            WaitHandle.WaitAll(waitThreads.ToArray());
+        }
     }
 }
